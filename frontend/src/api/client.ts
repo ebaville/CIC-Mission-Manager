@@ -23,6 +23,20 @@ const http = axios.create({
 });
 
 // ---------------------------------------------------------------------------
+// Health endpoint
+// ---------------------------------------------------------------------------
+
+export interface HealthResponse {
+  status: string;
+  version: string;
+}
+
+export async function getHealth(): Promise<HealthResponse> {
+  const { data } = await axios.get<HealthResponse>('/health');
+  return data;
+}
+
+// ---------------------------------------------------------------------------
 // Reference endpoints
 // ---------------------------------------------------------------------------
 
