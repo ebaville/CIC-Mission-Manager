@@ -10,17 +10,19 @@
  */
 
 import React, { useEffect, useState } from 'react';
-import { getFrames, getModels } from '../api/client';
-import type { FramesResponse, ModelsResponse } from '../api/client';
+import { getFrames, getModels, getHealth } from '../api/client';
+import type { FramesResponse, ModelsResponse, HealthResponse } from '../api/client';
 
 const DiagnosticsPage: React.FC = () => {
+  const [health, setHealth] = useState<HealthResponse | null>(null);
   const [frames, setFrames] = useState<FramesResponse | null>(null);
   const [models, setModels] = useState<ModelsResponse | null>(null);
   const [error, setError] = useState<string>('');
 
   useEffect(() => {
-    Promise.all([getFrames(), getModels()])
-      .then(([f, m]) => {
+    Promise.all([getHealth(), getFrames(), getModels()])
+      .then(([h, f, m]) => {
+        setHealth(h);
         setFrames(f);
         setModels(m);
       })
@@ -35,9 +37,12 @@ const DiagnosticsPage: React.FC = () => {
 
       <section>
         <h2>API Backend</h2>
-        {frames && models ? (
-          <p style={{ color: 'green' }}>✓ Backend connected</p>
-        ) : (
+        {health ? (
+          <p style={{ color: 'green' }}>
+            ✓ Backend connected — status: <strong>{health.status}</strong>, version:{' '}
+            <strong>{health.version}</strong>
+          </p>
+        ) : error ? null : (
           <p>Connecting…</p>
         )}
       </section>
